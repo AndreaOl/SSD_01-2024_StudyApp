@@ -1,0 +1,12 @@
+it\studyapp\application\integration\PasswordPresenterTest.class
+it\studyapp\application\integration\GroupPresenterTest.class
+it\studyapp\application\integration\ProfilePresenterTest.class
+it\studyapp\application\unit\SessionTest.class
+it\studyapp\application\integration\CalendarPresenterTest.class
+it\studyapp\application\integration\SessionPresenterTest$1.class
+it\studyapp\application\integration\CalendarPresenterTest$1.class
+it\studyapp\application\integration\SessionPresenterTest.class
+it\studyapp\application\unit\CalendarEntryEntityTest.class
+it\studyapp\application\integration\RegisterPresenterTest.class
+it\studyapp\application\unit\StudentGroupTest.class
+it\studyapp\application\integration\GroupPresenterTest$1.class
