@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/frontend/generated/jar-resources",
+  "staticOutput": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "C:\\Users\\oland\\eclipse-workspace\\SSD_01-2024_StudyApp\\target\\classes\\META-INF\\VAADIN\\config",
+  "frontendBundleOutput": "C:\\Users\\oland\\eclipse-workspace\\SSD_01-2024_StudyApp\\target\\classes\\META-INF\\VAADIN\\webapp",
+  "devBundleOutput": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/src/main/dev-bundle/webapp",
+  "devBundleStatsOutput": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/src/main/dev-bundle/config",
+  "jarResourcesFolder": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/frontend/generated/jar-resources",
+  "themeName": "studyapp",
+  "clientServiceWorkerSource": "C:\\Users\\oland\\eclipse-workspace\\SSD_01-2024_StudyApp\\target\\sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}

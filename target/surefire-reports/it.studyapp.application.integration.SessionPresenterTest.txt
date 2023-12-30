@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: it.studyapp.application.integration.SessionPresenterTest
+-------------------------------------------------------------------------------
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.829 s - in it.studyapp.application.integration.SessionPresenterTest

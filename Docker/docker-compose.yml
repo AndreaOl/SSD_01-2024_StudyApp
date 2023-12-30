@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    stdin_open: true
+    tty: true
+    networks:
+      studyapp_net:
+        ipv4_address: 192.168.2.2
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: SA_Az3FNs!
+    volumes:
+      - ./PostgreSQL/postgres_data:/var/lib/postgresql/data
+      - ./PostgreSQL/postgresql.conf:/etc/postgresql/16/main/postgresql.conf
+    ports:
+      - 5432:5432/tcp
+    cap_add:
+      - ALL
+
+  studyapp:
+    build:
+      context: ./StudyApp
+    image: studyapp:latest
+    container_name: studyapp
+    stdin_open: true
+    tty: true
+    networks:
+      studyapp_net:
+        ipv4_address: 192.168.2.3
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080/tcp
+    cap_add:
+      - ALL
+
+networks:
+  studyapp_net:
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24
