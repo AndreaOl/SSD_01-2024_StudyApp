@@ -15,8 +15,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: SA_Az3FNs!
     volumes:
-      - ./PostgreSQL/postgres_data:/var/lib/postgresql/data
-      - ./PostgreSQL/postgresql.conf:/etc/postgresql/16/main/postgresql.conf
+      - $HOME/SSD_Project/postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432/tcp
     cap_add:
