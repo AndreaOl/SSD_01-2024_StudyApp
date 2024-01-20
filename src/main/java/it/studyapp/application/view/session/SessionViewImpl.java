@@ -15,13 +15,14 @@ import com.vaadin.flow.router.Route;
 import it.studyapp.application.entity.Session;
 import it.studyapp.application.entity.Student;
 import it.studyapp.application.presenter.session.SessionPresenter;
+import it.studyapp.application.security.Roles;
 import it.studyapp.application.view.layout.MainLayoutImpl;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 
 @PageTitle("Sessions")
 @Route(value = "sessions", layout = MainLayoutImpl.class)
-@PermitAll
+@RolesAllowed(Roles.USER)
 public class SessionViewImpl extends VerticalLayout implements SessionView {
 
 	/**

@@ -14,12 +14,13 @@ import com.vaadin.flow.router.Route;
 import it.studyapp.application.entity.Student;
 import it.studyapp.application.entity.StudentGroup;
 import it.studyapp.application.presenter.group.GroupPresenter;
+import it.studyapp.application.security.Roles;
 import it.studyapp.application.view.layout.MainLayoutImpl;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Groups")
 @Route(value = "groups", layout = MainLayoutImpl.class)
-@PermitAll
+@RolesAllowed(Roles.USER)
 public class GroupViewImpl extends VerticalLayout implements GroupView {
 
 	/**

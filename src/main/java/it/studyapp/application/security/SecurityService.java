@@ -1,28 +1,36 @@
 package it.studyapp.application.security;
 
-import com.vaadin.flow.spring.security.AuthenticationContext;
+import it.studyapp.application.security.vaadin.LogoutUtil;
+import it.studyapp.application.service.CurrentSession;
+import it.studyapp.application.service.UserInfo;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class SecurityService {
 
-    private final AuthenticationContext authenticationContext;
+    private final CurrentSession currentSession;
+    private final LogoutUtil logoutUtil;
 
-    public SecurityService(AuthenticationContext authenticationContext) {
-        this.authenticationContext = authenticationContext;
+    public SecurityService(CurrentSession currentSession, LogoutUtil logoutUtil) {
+        this.currentSession = currentSession;
+        this.logoutUtil = logoutUtil;
     }
     
-    public UserDetails getAuthenticatedUser() {
-        return authenticationContext.getAuthenticatedUser(UserDetails.class).get();
+    public UserInfo getAuthenticatedUser() {
+        return currentSession.getCurrentUser().get();
     }
+    
     public boolean isAuthenticated() {
-    	return authenticationContext.isAuthenticated();
+    	return currentSession.getCurrentUser().isPresent();
     }
 
     public void logout() {
-        authenticationContext.logout();
+    	logoutUtil.logout();
+    }
+    
+    public boolean isAdmin() {
+    	return currentSession.hasRole(Roles.ADMIN);
     }
 }

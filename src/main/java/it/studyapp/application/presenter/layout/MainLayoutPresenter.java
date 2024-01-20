@@ -10,5 +10,6 @@ public interface MainLayoutPresenter {
 	public void registerUI();
 	public void unregisterUI();
 	public void logout();
+	public boolean isAdmin();
 
 }

@@ -1,6 +1,5 @@
 package it.studyapp.application.ui.form.profile;
 
-
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
@@ -8,9 +7,10 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 
+import it.studyapp.application.Application;
+import it.studyapp.application.entity.Student;
 import it.studyapp.application.event.ProfileUpdatedEvent;
 import it.studyapp.application.presenter.profile.ProfilePresenter;
-import it.studyapp.application.security.CustomUserDetails;
 
 public class ProfileFormBinder {
 
@@ -28,7 +28,7 @@ public class ProfileFormBinder {
 	 * to the registration form
 	 */
 	public void addBindingAndValidation() {
-		BeanValidationBinder<CustomUserDetails> binder = new BeanValidationBinder<>(CustomUserDetails.class);
+		BeanValidationBinder<Student> binder = new BeanValidationBinder<>(Student.class);
 
 		binder.bindInstanceFields(profileForm);
 
@@ -64,7 +64,7 @@ public class ProfileFormBinder {
 		profileForm.getSubmitButton().addClickListener(event -> {
 			try {
 				// Create empty bean to store the details into
-				CustomUserDetails userBean = new CustomUserDetails();
+				Student userBean = profileForm.getStudent();
 
 
 				// Run validators and write the values to the bean
@@ -78,6 +78,10 @@ public class ProfileFormBinder {
 
 				ComponentUtil.fireEvent(UI.getCurrent(), new ProfileUpdatedEvent(UI.getCurrent(), false, userBean.getUsername()));
 
+				UI ui = Application.getUserUI("admin");
+				if(ui != null)
+					ui.access(() -> ComponentUtil.fireEvent(ui, new ProfileUpdatedEvent(UI.getCurrent(), false, userBean.getUsername())));
+				
 			} catch (ValidationException exception) {
 
 				// validation errors are already visible for each field,
@@ -90,7 +94,7 @@ public class ProfileFormBinder {
 	private void showSuccess() {
 		Notification notification = new Notification();
 		notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-		notification = Notification.show("Data updated");
+		notification = Notification.show("Profile updated");
 	}
 
 }

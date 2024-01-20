@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.vaadin.stefan.fullcalendar.Entry;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
@@ -40,9 +39,6 @@ public class Session extends AbstractEntity {
     	inverseJoinColumns = @JoinColumn(name = "student_id"))
 	@NotNull
 	private List<Student> participants = new ArrayList<>();
-	
-	@NotBlank
-	private String entryId = (new Entry()).getId();
 	
 	public Session() {
 		this.subject = null;
@@ -97,14 +93,6 @@ public class Session extends AbstractEntity {
 
 	public void setOwner(Student owner) {
 		this.owner = owner;
-	}
-	
-	public String getEntryId() {
-		return this.entryId;
-	}
-	
-	public void setEntryId(String entryId) {
-		this.entryId = entryId;
 	}
 	
 	public void addParticipant(Student participant) {

@@ -30,7 +30,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import it.studyapp.application.view.DashboardViewImpl;
-import it.studyapp.application.view.calendar.CalendarViewImpl;
+import it.studyapp.application.view.admin.AdminViewImpl;
 import it.studyapp.application.view.group.GroupViewImpl;
 import it.studyapp.application.view.session.SessionViewImpl;
 
@@ -156,9 +156,11 @@ public class MainLayoutImpl extends AppLayout implements MainLayout {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Dashboard", DashboardViewImpl.class, LineAwesomeIcon.HOME_SOLID.create()));
-        nav.addItem(new SideNavItem("Calendar", CalendarViewImpl.class, LineAwesomeIcon.CALENDAR_ALT_SOLID.create()));
         nav.addItem(new SideNavItem("Groups", GroupViewImpl.class, LineAwesomeIcon.USER_FRIENDS_SOLID.create()));
         nav.addItem(new SideNavItem("Sessions", SessionViewImpl.class, LineAwesomeIcon.BUSINESS_TIME_SOLID.create()));
+        
+        if(presenter.isAdmin())
+        	nav.addItem(new SideNavItem("Admin", AdminViewImpl.class, LineAwesomeIcon.CHESS_KING_SOLID.create()));
         
         return nav;
     }

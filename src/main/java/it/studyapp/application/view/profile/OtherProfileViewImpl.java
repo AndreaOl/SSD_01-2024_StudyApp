@@ -11,14 +11,15 @@ import com.vaadin.flow.router.Route;
 
 import it.studyapp.application.entity.Student;
 import it.studyapp.application.presenter.profile.ProfilePresenter;
+import it.studyapp.application.security.Roles;
 import it.studyapp.application.ui.form.profile.ProfileForm;
 import it.studyapp.application.ui.form.profile.ProfileFormBinder;
 import it.studyapp.application.view.layout.MainLayoutImpl;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Profilo")
 @Route(value = "profile", layout = MainLayoutImpl.class)
-@PermitAll
+@RolesAllowed(Roles.USER)
 public class OtherProfileViewImpl extends VerticalLayout implements OtherProfileView, HasUrlParameter<String>, AfterNavigationObserver {
 
 	private static final long serialVersionUID = 1L;
