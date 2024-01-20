@@ -32,6 +32,8 @@ public class ProfileForm extends Composite<VerticalLayout> {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private Student student;
+	
 	private TextField username;
 	private TextField firstName;
 	private TextField lastName;
@@ -50,6 +52,7 @@ public class ProfileForm extends Composite<VerticalLayout> {
 	private boolean firstTime = true;
 	
 	public ProfileForm(Student student, boolean modifiable) {
+		this.student = student;
 
 		avatar = new IntegerField("Avatar");
 		username = new TextField("Username");
@@ -249,6 +252,10 @@ public class ProfileForm extends Composite<VerticalLayout> {
 
 	public TextField getUsername() {
 		return username;
+	}
+	
+	public Student getStudent() {
+		return student;
 	}
 
 

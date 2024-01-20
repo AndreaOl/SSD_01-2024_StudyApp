@@ -13,7 +13,6 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 
 import it.studyapp.application.Application;
-import it.studyapp.application.entity.CalendarEntryEntity;
 import it.studyapp.application.entity.NotificationEntity;
 import it.studyapp.application.entity.Session;
 import it.studyapp.application.entity.SessionRequest;
@@ -22,6 +21,7 @@ import it.studyapp.application.entity.StudentGroup;
 import it.studyapp.application.entity.StudentGroupRequest;
 import it.studyapp.application.event.NotificationCreatedEvent;
 import it.studyapp.application.event.SessionRequestCreatedEvent;
+import it.studyapp.application.event.SessionUpdatedEvent;
 import it.studyapp.application.event.StudentGroupRemovedEvent;
 import it.studyapp.application.event.StudentGroupRequestAcceptedEvent;
 import it.studyapp.application.event.StudentGroupRequestCreatedEvent;
@@ -117,6 +117,10 @@ public class GroupPresenterImpl implements GroupPresenter {
 				ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupUpdatedEvent(UI.getCurrent(), false)));
 		});
 		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupUpdatedEvent(UI.getCurrent(), false)));
+		
 		selectedGroup = null;
 		view.hideMembers();
 		updateGroupGrid();
@@ -172,6 +176,10 @@ public class GroupPresenterImpl implements GroupPresenter {
 			if(ui != null)
 				ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupRequestCreatedEvent(UI.getCurrent(), false, persistentSGR)));
 		});
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupUpdatedEvent(UI.getCurrent(), false)));
 
 		updateGroupGrid();
 	}
@@ -194,6 +202,10 @@ public class GroupPresenterImpl implements GroupPresenter {
 			if(ui != null)
 				ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupRemovedEvent(UI.getCurrent(), false)));
 		});
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupRemovedEvent(UI.getCurrent(), false)));
 	}
 
 	private void onStudentGroupUpdated(StudentGroup studentGroup, Set<Student> unmodifiableSelectedStudents) {
@@ -248,6 +260,10 @@ public class GroupPresenterImpl implements GroupPresenter {
 			if(ui != null)
 				ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupUpdatedEvent(UI.getCurrent(), false)));
 		});
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupUpdatedEvent(UI.getCurrent(), false)));
 	}
 	
 	private void onSessionCreated(Session session, Set<Student> selectedStudents) {
@@ -264,12 +280,10 @@ public class GroupPresenterImpl implements GroupPresenter {
 				ui.access(() -> ComponentUtil.fireEvent(ui, new SessionRequestCreatedEvent(UI.getCurrent(), false, persistentSR)));
 
 		});
-
-		CalendarEntryEntity sessionCalendarEntry = new CalendarEntryEntity(session.getEntryId(), "Session - " + session.getSubject(), 
-				"", session.getDate(), session.getDate().plusHours(1), "dodgerblue", false, false, null, null, null, false);
-
-		sessionCalendarEntry.addParticipant(session.getOwner());
-		dataService.saveCalendarEntry(sessionCalendarEntry);
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
 		
 		updateGroupGrid();
 	}

@@ -4,7 +4,6 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 
 import it.studyapp.application.Application;
-import it.studyapp.application.entity.CalendarEntryEntity;
 import it.studyapp.application.entity.Session;
 import it.studyapp.application.entity.SessionRequest;
 import it.studyapp.application.entity.Student;
@@ -32,11 +31,6 @@ public class SessionRequestRunnable implements Runnable {
 		if(session != null && !session.getParticipants().contains(notifiedStudent)) {		
 			session.addParticipant(notifiedStudent);
 			dataService.saveSession(session);
-			
-			CalendarEntryEntity sessionCalendarEntry = dataService.searchCalendarEntry(session.getEntryId()).get(0);
-			
-			sessionCalendarEntry.addParticipant(notifiedStudent);
-	        dataService.saveCalendarEntry(sessionCalendarEntry);
 	        
 	        sessionRequest.setAccepted(Boolean.valueOf(true));
 	        dataService.saveSessionRequest(sessionRequest);

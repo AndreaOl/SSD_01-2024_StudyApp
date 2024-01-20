@@ -19,8 +19,8 @@ public class SessionTest {
 
 	@BeforeEach
 	public void setup() {
-		owner = new Student("mrossi", "Mario", "Rossi", "password", LocalDate.now(),
-				"Ingegneria Informatica", "2° Anno Magistrale", "mrossi@gmail.com", 0, Arrays.asList("ROLE_USER"));
+		owner = new Student("mrossi", "keycloakId", "Mario", "Rossi", LocalDate.now(),
+				"Ingegneria Informatica", "2° Anno Magistrale", "mrossi@gmail.com", 0);
 	}
 
 	@Test
@@ -29,8 +29,8 @@ public class SessionTest {
 		Session testSession = new Session("SAD", LocalDateTime.now(), "Aula studio", owner, new ArrayList<>(Arrays.asList(owner)));
 
 		// Nuovo partecipante
-		Student student = new Student("gespo", "Giuseppe", "Esposito", "password", LocalDate.now(),
-				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0, Arrays.asList("ROLE_USER"));
+		Student student = new Student("gespo", "keycloakId", "Giuseppe", "Esposito", LocalDate.now(),
+				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0);
 
 		testSession.addParticipant(student);
 
@@ -45,8 +45,8 @@ public class SessionTest {
 		Session testSession = new Session("SAD", LocalDateTime.now(), "Aula studio", owner, new ArrayList<>(Arrays.asList(owner)));
 		
 		// Nuovo partecipante
-		Student student = new Student("gespo", "Giuseppe", "Esposito", "password", LocalDate.now(),
-				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0, Arrays.asList("ROLE_USER"));
+		Student student = new Student("gespo", "keycloakId", "Giuseppe", "Esposito", LocalDate.now(),
+				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0);
 
 		testSession.addParticipant(student);
 		testSession.removeParticipant(student);

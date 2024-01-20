@@ -1,13 +1,13 @@
 package it.studyapp.application.entity;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.flow.component.html.Image;
 
-import it.studyapp.application.security.CustomUserDetails;
+import it.studyapp.application.service.UserInfo;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,13 +24,13 @@ public class Student extends AbstractEntity {
 	private String username;
 	
 	@NotBlank
+	private String keycloakId;
+	
+	@NotBlank
 	private String firstName;
 	
 	@NotBlank
 	private String lastName;
-	
-	@NotBlank
-	private String password;
 	
 	@NotNull
 	private LocalDate birthDate;
@@ -47,9 +47,6 @@ public class Student extends AbstractEntity {
 
 	private int avatar;
 	
-	@NotNull
-	private List<String> roles;
-	
 	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
 	@NotNull
 	private List<Session> sessions = new ArrayList<>();
@@ -58,53 +55,45 @@ public class Student extends AbstractEntity {
 	@NotNull
 	private List<StudentGroup> studentGroups = new ArrayList<>();
 	
-	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
-	@NotNull
-	private List<CalendarEntryEntity> calendarEntries = new ArrayList<>();
-	
 	@OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
 	@NotNull
     private List<NotificationEntity> notifications = new ArrayList<>();
 	
 	public Student() {
 		this.username = "unspecified";
+		this.keycloakId = "unspecified";
 		this.firstName = "unspecified";
 		this.lastName = "unspecified";
 		this.fieldOfStudy = null;
 		this.birthDate = LocalDate.now();
 		this.yearFollowing = null;
-		this.password = "unspecified";
 		this.avatar = 0;
-		this.roles = Arrays.asList("ROLE_USER");
 	}
 
-	public Student(@NotBlank String username, @NotBlank String firstName, @NotBlank String lastName,
-			@NotBlank String password, @NotNull LocalDate birthDate, String fieldOfStudy, String yearFollowing,
-			@NotBlank @Email String email, @NotBlank int avatar, @NotNull List<String> roles) {
+	public Student(@NotBlank String username, @NotBlank String keycloakId, @NotBlank String firstName,
+			@NotBlank String lastName, @NotNull LocalDate birthDate, String fieldOfStudy,
+			String yearFollowing, @NotBlank @Email String email, @NotBlank int avatar) {
 		this.username = username;
+		this.keycloakId = keycloakId;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.password = password;
 		this.birthDate = birthDate;
 		this.fieldOfStudy = fieldOfStudy;
 		this.yearFollowing = yearFollowing;
 		this.email = email;
 		this.avatar = avatar;
-		this.roles = roles;
 	}	
 
-	public Student(CustomUserDetails user) {
+	public Student(UserInfo user) {
 		this.username = user.getUsername();
+		this.keycloakId = user.getId();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
+		this.email = user.getEmail();
+		this.avatar = 0;
+		this.birthDate = LocalDate.parse(user.getBirthDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		this.fieldOfStudy = user.getFieldOfStudy();
 		this.yearFollowing = user.getYearFollowing();
-		this.email = user.getEmail();
-		this.avatar = user.getAvatar();
-		this.password = user.getPassword();
-		this.birthDate = user.getBirthDate();
-		this.roles = new ArrayList<String>();
-		user.getAuthorities().forEach(authority -> this.roles.add(authority.getAuthority()));
 	}
 	
 	
@@ -117,6 +106,14 @@ public class Student extends AbstractEntity {
 	
 
 	/* Getters and Setters */
+	
+	public String getKeycloakId() {
+		return keycloakId;
+	}
+	
+	public void setKeycloakId(String keycloakId) {
+		this.keycloakId = keycloakId;
+	}
 
 	public String getUsername() {
 		return username;
@@ -124,14 +121,6 @@ public class Student extends AbstractEntity {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public List<String> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
 	}
 
 	public LocalDate getBirthDate() {
@@ -205,14 +194,6 @@ public class Student extends AbstractEntity {
 	public void setStudentGroups(List<StudentGroup> studentGroups) {
 		this.studentGroups = studentGroups;
 	}
-	
-	public List<CalendarEntryEntity> getCalendarEntries() {
-		return calendarEntries;
-	}
-
-	public void setCalendarEntries(List<CalendarEntryEntity> calendarEntries) {
-		this.calendarEntries = calendarEntries;
-	}
 
 	public List<NotificationEntity> getNotifications() {
 		return notifications;
@@ -221,15 +202,6 @@ public class Student extends AbstractEntity {
 	public void setNotifications(List<NotificationEntity> notifications) {
 		this.notifications = notifications;
 	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	
 	@Override
 	public String toString() {

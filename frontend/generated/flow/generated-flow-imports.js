@@ -1,9 +1,3 @@
-import { injectGlobalCss } from 'Frontend/generated/jar-resources/theme-util.js';
-
-import { css, unsafeCSS, registerStyles } from '@vaadin/vaadin-themable-mixin';
-import $cssFromFile_0 from 'Frontend/generated/jar-resources/vaadin-full-calendar/full-calendar-styles.css?inline';
-
-injectGlobalCss($cssFromFile_0.toString(), 'CSSImport end', document);
 import '@vaadin/polymer-legacy-adapter/style-modules.js';
 import '@vaadin/vaadin-lumo-styles/color-global.js';
 import '@vaadin/vaadin-lumo-styles/typography-global.js';
@@ -102,7 +96,6 @@ import '@vaadin/grid/theme/lumo/vaadin-grid-tree-toggle.js';
 import '@vaadin/upload/theme/lumo/vaadin-upload.js';
 import '@vaadin/virtual-list/theme/lumo/vaadin-virtual-list.js';
 import 'Frontend/generated/jar-resources/virtualListConnector.js';
-import 'Frontend/generated/jar-resources/vaadin-full-calendar/full-calendar.ts';
 const loadOnDemand = (key) => { return Promise.resolve(0); }
 window.Vaadin = window.Vaadin || {};
 window.Vaadin.Flow = window.Vaadin.Flow || {};

@@ -15,7 +15,6 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 
 import it.studyapp.application.Application;
-import it.studyapp.application.entity.CalendarEntryEntity;
 import it.studyapp.application.entity.NotificationEntity;
 import it.studyapp.application.entity.Session;
 import it.studyapp.application.entity.SessionRequest;
@@ -110,15 +109,15 @@ public class SessionPresenterImpl implements SessionPresenter {
 		selectedSession.removeParticipant(thisStudent);
 		selectedSession = dataService.saveSession(selectedSession);
 		
-		CalendarEntryEntity sessionCalendarEntry = dataService.searchCalendarEntry(selectedSession.getEntryId()).get(0);
-		sessionCalendarEntry.removeParticipant(thisStudent);
-		dataService.saveCalendarEntry(sessionCalendarEntry);
-		
 		selectedSession.getParticipants().forEach(s -> {
 			UI ui = Application.getUserUI(s.getUsername());
 			if(ui != null)
 				ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
 		});
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
 		
 		selectedSession = null;
 		view.hideParticipants();
@@ -168,25 +167,18 @@ public class SessionPresenterImpl implements SessionPresenter {
 				ui.access(() -> ComponentUtil.fireEvent(ui, new SessionRequestCreatedEvent(UI.getCurrent(), false, persistentSR)));
 
 		});
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
 
 		updateSessionGrid();
-
-
-		CalendarEntryEntity sessionCalendarEntry = new CalendarEntryEntity(session.getEntryId(), "Session - " + session.getSubject(), 
-				"", session.getDate(), session.getDate().plusHours(1), "dodgerblue", false, false, null, null, null, false);
-
-		sessionCalendarEntry.addParticipant(session.getOwner());
-		dataService.saveCalendarEntry(sessionCalendarEntry);
 	}
 
 	private void onSessionRemoved(Session session) {
 		Set<Student> sessionParticipants = new HashSet<>(session.getParticipants());
 
 		dataService.deleteSession(session);
-
-		CalendarEntryEntity sessionCalendarEntry = dataService.searchCalendarEntry(session.getEntryId()).get(0);
-
-		dataService.deleteCalendarEntry(sessionCalendarEntry);
 		
 		List<SessionRequest> requests = dataService.searchSessionRequests(session.getId());
 		if(requests != null && !requests.isEmpty()) {
@@ -201,6 +193,10 @@ public class SessionPresenterImpl implements SessionPresenter {
 			if(ui != null)
 				ui.access(() -> ComponentUtil.fireEvent(ui, new SessionRemovedEvent(UI.getCurrent(), false)));
 		});
+		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new SessionRemovedEvent(UI.getCurrent(), false)));
 	}
 
 	private void onSessionUpdated(Session session, Set<Student> unmodifiableSelectedStudents) {
@@ -243,19 +239,7 @@ public class SessionPresenterImpl implements SessionPresenter {
 			}
 		});
 
-		Session persistentSession = dataService.saveSession(session);
-
-
-		CalendarEntryEntity oldCalendarEntry = dataService.searchCalendarEntry(persistentSession.getEntryId()).get(0);
-
-		oldCalendarEntry.setTitle("Session - " + persistentSession.getSubject());
-		oldCalendarEntry.setStartDateTime(persistentSession.getDate());
-		oldCalendarEntry.setEndDateTime(persistentSession.getDate().plusDays(1));
-		
-		oldCalendarEntry.removeAllParticipants();
-		oldCalendarEntry.addParticipants(persistentSession.getParticipants());
-
-		dataService.saveCalendarEntry(oldCalendarEntry);		
+		Session persistentSession = dataService.saveSession(session);	
 
 
 		persistentSession.getParticipants().forEach(s -> {
@@ -270,6 +254,9 @@ public class SessionPresenterImpl implements SessionPresenter {
 				ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
 		});
 		
+		UI ui = Application.getUserUI("admin");
+		if(ui != null)
+			ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
 
 	}
 

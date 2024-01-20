@@ -35,12 +35,4 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
                 @Param("email") String email,
     			@Param("username") String username,
     			@Param("avatar") int avatar);
-	
-	@Transactional
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Student s " +
-            "SET s.password = :password " +
-            "where s.username = :username")
-    void changeStudentPassword(@Param("username") String username,
-    			@Param("password") String password);	
 }
