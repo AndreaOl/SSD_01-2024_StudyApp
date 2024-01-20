@@ -4,14 +4,6 @@
   "type": "module",
   "dependencies": {
     "@fontsource/open-sans": "4.5.0",
-    "@fullcalendar/core": "6.1.6",
-    "@fullcalendar/daygrid": "6.1.6",
-    "@fullcalendar/interaction": "6.1.6",
-    "@fullcalendar/list": "6.1.6",
-    "@fullcalendar/moment": "6.1.6",
-    "@fullcalendar/moment-timezone": "6.1.6",
-    "@fullcalendar/multimonth": "6.1.6",
-    "@fullcalendar/timegrid": "6.1.6",
     "@polymer/polymer": "3.5.1",
     "@vaadin/a11y-base": "24.1.9",
     "@vaadin/accordion": "24.1.9",
@@ -88,8 +80,6 @@
     "date-fns": "2.29.3",
     "lit": "2.7.6",
     "mobile-drag-drop": "2.3.0-rc.2",
-    "moment": "2.29.4",
-    "moment-timezone": "0.5.40",
     "proj4": "2.9.0"
   },
   "devDependencies": {
@@ -113,14 +103,6 @@
   "vaadin": {
     "dependencies": {
       "@fontsource/open-sans": "4.5.0",
-      "@fullcalendar/core": "6.1.6",
-      "@fullcalendar/daygrid": "6.1.6",
-      "@fullcalendar/interaction": "6.1.6",
-      "@fullcalendar/list": "6.1.6",
-      "@fullcalendar/moment": "6.1.6",
-      "@fullcalendar/moment-timezone": "6.1.6",
-      "@fullcalendar/multimonth": "6.1.6",
-      "@fullcalendar/timegrid": "6.1.6",
       "@polymer/polymer": "3.5.1",
       "@vaadin/a11y-base": "24.1.9",
       "@vaadin/accordion": "24.1.9",
@@ -197,8 +179,6 @@
       "date-fns": "2.29.3",
       "lit": "2.7.6",
       "mobile-drag-drop": "2.3.0-rc.2",
-      "moment": "2.29.4",
-      "moment-timezone": "0.5.40",
       "proj4": "2.9.0"
     },
     "devDependencies": {
@@ -219,7 +199,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "15df65795f6532203426768d8e849b09823ecd78dae3671e74610b75fdf6d5af"
+    "hash": "e579923c31730f27d281fd5a5c4489fd738703bcaaf8aeb9b16e7b5c85e2ba29"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -295,19 +275,9 @@
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
     "proj4": "$proj4",
-    "@fullcalendar/core": "$@fullcalendar/core",
-    "@fullcalendar/list": "$@fullcalendar/list",
-    "@fullcalendar/moment-timezone": "$@fullcalendar/moment-timezone",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "@fullcalendar/interaction": "$@fullcalendar/interaction",
     "date-fns": "$date-fns",
-    "@fullcalendar/timegrid": "$@fullcalendar/timegrid",
-    "moment": "$moment",
-    "@fullcalendar/daygrid": "$@fullcalendar/daygrid",
     "mobile-drag-drop": "$mobile-drag-drop",
-    "moment-timezone": "$moment-timezone",
-    "@fullcalendar/multimonth": "$@fullcalendar/multimonth",
-    "@fullcalendar/moment": "$@fullcalendar/moment",
     "@xpertsea/paper-slider": "$@xpertsea/paper-slider",
     "@fontsource/open-sans": "$@fontsource/open-sans"
   }

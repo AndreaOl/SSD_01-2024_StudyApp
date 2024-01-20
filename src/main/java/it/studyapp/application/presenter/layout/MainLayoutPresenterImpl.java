@@ -23,13 +23,14 @@ import it.studyapp.application.event.NotificationsReadEvent;
 import it.studyapp.application.event.ProfileUpdatedEvent;
 import it.studyapp.application.event.ReminderCreatedEvent;
 import it.studyapp.application.event.SessionRequestCreatedEvent;
+import it.studyapp.application.event.StudentCreatedEvent;
 import it.studyapp.application.event.StudentGroupRequestCreatedEvent;
 import it.studyapp.application.runnable.SessionRequestRunnable;
 import it.studyapp.application.runnable.StudentGroupRequestRunnable;
 import it.studyapp.application.security.SecurityService;
 import it.studyapp.application.service.CalendarService;
 import it.studyapp.application.service.DataService;
-import it.studyapp.application.util.data.DataGenerator;
+import it.studyapp.application.service.UserInfo;
 import it.studyapp.application.view.layout.MainLayout;
 
 @Component
@@ -45,13 +46,21 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
     private int notificationsCount = 0;
         
     public MainLayoutPresenterImpl(DataService dataService, SecurityService securityService, 
-    		CalendarService calendarService, DataGenerator dataGenerator) {    
+    		CalendarService calendarService) {
     	
         this.dataService = dataService;
         this.securityService = securityService;
-    	
-        dataGenerator.generateData();
         
+        UserInfo currentUser = securityService.getAuthenticatedUser();
+        if(dataService.searchStudent(currentUser.getUsername()).isEmpty()) {
+        	Student newStudent = new Student(currentUser);
+        	dataService.saveStudent(newStudent);
+        	
+        	UI adminUI = Application.getUserUI("admin");
+        	if(adminUI != null)
+        		adminUI.access(() -> ComponentUtil.fireEvent(adminUI, new StudentCreatedEvent(UI.getCurrent(), false)));
+        }
+            	        
         calendarService.checkEvents();
     }
 
@@ -179,6 +188,11 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 	@Override
 	public void logout() {
 		securityService.logout();
+	}
+
+	@Override
+	public boolean isAdmin() {
+		return securityService.isAdmin();
 	}
 
 	private void createListeners() {

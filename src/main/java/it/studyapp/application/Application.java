@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.AppShellSettings;
+import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 
 
@@ -25,6 +26,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @NpmPackage(value = "@fontsource/open-sans", version = "4.5.0")
 @Theme(value = "studyapp")
+@PWA(
+        name = "StudyApp",
+        shortName = "SA",
+        offlinePath="offline.html",
+        offlineResources = { "images/offline.png" }
+)
 @Push
 public class Application implements AppShellConfigurator {
 	

@@ -7,9 +7,6 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
-import org.vaadin.stefan.fullcalendar.Entry;
-import org.vaadin.stefan.fullcalendar.dataprovider.InMemoryEntryProvider;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
@@ -32,14 +29,14 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 import it.studyapp.application.entity.Session;
 import it.studyapp.application.presenter.DashboardPresenter;
-import it.studyapp.application.ui.calendar.CalendarLayout;
+import it.studyapp.application.security.Roles;
 import it.studyapp.application.view.layout.MainLayoutImpl;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayoutImpl.class)
 @RouteAlias(value = "", layout = MainLayoutImpl.class)
-@PermitAll
+@RolesAllowed(Roles.USER)
 public class DashboardViewImpl extends Main implements DashboardView {
 
 	/**
@@ -50,7 +47,6 @@ public class DashboardViewImpl extends Main implements DashboardView {
 	private DashboardPresenter presenter;
 	
 	private Chart chart;
-	private CalendarLayout calendarLayout;
 	private Grid<Session> sessionGrid;
 	private Select<Month> monthSelection;
 
@@ -63,17 +59,8 @@ public class DashboardViewImpl extends Main implements DashboardView {
 		
 		add(createChart());
 		
-		calendarLayout = new CalendarLayout();
-		calendarLayout.setWidth("95%");
-		calendarLayout.setHeight("105%");
-
-		HorizontalLayout layout = new HorizontalLayout(calendarLayout, createSessionGrid());
-		layout.setWidthFull();
-		layout.setHeight("70%");
+		add(createSessionGrid());
 		
-		add(layout);
-		
-		this.presenter.updateCalendar();
 		this.presenter.updateSessionGrid();
 	}
 
@@ -85,30 +72,6 @@ public class DashboardViewImpl extends Main implements DashboardView {
 	@Override
 	public void drawChart() {
 		chart.drawChart();
-	}
-
-	@Override
-	public void removeAllCalendarEntries() {
-		if(calendarLayout.getCalendar().isInMemoryEntryProvider()) {
-            InMemoryEntryProvider<Entry> provider = calendarLayout.getCalendar().getEntryProvider();
-            provider.removeAllEntries();
-        }
-	}
-
-	@Override
-	public void refreshAllCalendarEntries() {
-		if(calendarLayout.getCalendar().isInMemoryEntryProvider()) {
-            InMemoryEntryProvider<Entry> provider = calendarLayout.getCalendar().getEntryProvider();
-            provider.refreshAll();
-        }		
-	}
-
-	@Override
-	public void addCalendarEntry(Entry entry) {
-		if(calendarLayout.getCalendar().isInMemoryEntryProvider()) {
-			InMemoryEntryProvider<Entry> provider = calendarLayout.getCalendar().getEntryProvider();
-            provider.addEntry(entry);
-        }		
 	}
 
 	@Override
@@ -178,6 +141,8 @@ public class DashboardViewImpl extends Main implements DashboardView {
 
 		// Add it all together
 		VerticalLayout dailyOrganization = new VerticalLayout(header, sessionGrid);
+		dailyOrganization.setWidthFull();
+		dailyOrganization.setHeight("70%");
 		
 		return dailyOrganization;
 	}

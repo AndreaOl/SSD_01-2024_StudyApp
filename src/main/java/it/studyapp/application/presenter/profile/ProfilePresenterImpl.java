@@ -8,17 +8,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import it.studyapp.application.entity.Student;
-import it.studyapp.application.security.CustomUserDetails;
-import it.studyapp.application.security.SecurityConfig;
 import it.studyapp.application.security.SecurityService;
 import it.studyapp.application.service.DataService;
+import it.studyapp.application.service.UserService;
 
 @Component
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ProfilePresenterImpl implements ProfilePresenter {
 	
 	@Autowired
-	private SecurityConfig securityConfig;
+	private UserService userService;
 	
 	@Autowired
 	private DataService dataService;
@@ -27,8 +26,10 @@ public class ProfilePresenterImpl implements ProfilePresenter {
 	private SecurityService securityService;
 	
 	@Override
-	public void updateUser(CustomUserDetails user) {
-		securityConfig.getManager().updateUser(user);
+	public void updateUser(Student user) {
+		userService.updateUser(user);
+		
+		dataService.updateStudent(user);
 	}
 	
 	@Override
@@ -44,6 +45,11 @@ public class ProfilePresenterImpl implements ProfilePresenter {
 			return null;
 		
 		return studentList.get(0);
+	}
+
+	@Override
+	public void resetPassword() {
+		userService.resetPassword(securityService.getAuthenticatedUser().getId());
 	}
 
 }

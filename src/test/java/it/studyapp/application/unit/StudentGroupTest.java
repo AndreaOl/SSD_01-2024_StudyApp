@@ -18,8 +18,8 @@ public class StudentGroupTest {
 	
 	@BeforeEach
 	public void setup() {
-		owner = new Student("mrossi", "Mario", "Rossi", "password", LocalDate.now(),
-				"Ingegneria Informatica", "2° Anno Magistrale", "mrossi@gmail.com", 0, Arrays.asList("ROLE_USER"));
+		owner = new Student("mrossi", "keycloakId", "Mario", "Rossi", LocalDate.now(),
+				"Ingegneria Informatica", "2° Anno Magistrale", "mrossi@gmail.com", 0);
 	}
 	
 	@Test
@@ -28,8 +28,8 @@ public class StudentGroupTest {
 		StudentGroup testGroup = new StudentGroup("Progetto SAD", owner, new ArrayList<>(Arrays.asList(owner)));
 		
 		// Nuovo membro
-		Student student = new Student("gespo", "Giuseppe", "Esposito", "password", LocalDate.now(),
-				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0, Arrays.asList("ROLE_USER"));
+		Student student = new Student("gespo", "keycloakId", "Giuseppe", "Esposito", LocalDate.now(),
+				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0);
 		
 		testGroup.addMember(student);
 		
@@ -44,8 +44,8 @@ public class StudentGroupTest {
 		StudentGroup testGroup = new StudentGroup("Progetto SAD", owner, new ArrayList<>(Arrays.asList(owner)));
 		
 		// Nuovo membro
-		Student student = new Student("gespo", "Giuseppe", "Esposito", "password", LocalDate.now(),
-				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0, Arrays.asList("ROLE_USER"));
+		Student student = new Student("gespo", "keycloakId", "Giuseppe", "Esposito", LocalDate.now(),
+				"Ingegneria Informatica", "2° Anno Magistrale", "gespo@gmail.com", 0);
 		
 		testGroup.addMember(student);
 		testGroup.removeMember(student);

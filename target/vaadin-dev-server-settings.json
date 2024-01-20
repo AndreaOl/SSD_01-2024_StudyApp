@@ -11,7 +11,7 @@
   "jarResourcesFolder": "C:/Users/oland/eclipse-workspace/SSD_01-2024_StudyApp/frontend/generated/jar-resources",
   "themeName": "studyapp",
   "clientServiceWorkerSource": "C:\\Users\\oland\\eclipse-workspace\\SSD_01-2024_StudyApp\\target\\sw.ts",
-  "pwaEnabled": false,
-  "offlineEnabled": false,
+  "pwaEnabled": true,
+  "offlineEnabled": true,
   "offlinePath": "'offline.html'"
 }

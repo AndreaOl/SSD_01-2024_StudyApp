@@ -15,14 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.vaadin.stefan.fullcalendar.Entry;
 
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Series;
 
-import it.studyapp.application.entity.CalendarEntryEntity;
 import it.studyapp.application.entity.Session;
 import it.studyapp.application.entity.Student;
 import it.studyapp.application.event.SessionRemovedEvent;
@@ -30,7 +28,6 @@ import it.studyapp.application.event.SessionRequestAcceptedEvent;
 import it.studyapp.application.event.SessionUpdatedEvent;
 import it.studyapp.application.security.SecurityService;
 import it.studyapp.application.service.DataService;
-import it.studyapp.application.util.calendar.EntryManager;
 import it.studyapp.application.view.DashboardView;
 
 @Component
@@ -117,36 +114,9 @@ public class DashboardPresenterImpl implements DashboardPresenter {
 		
 		view.setSessionGridItems(lss);
 	}
-
-	@Override
-	public void updateCalendar() {
-		view.removeAllCalendarEntries();
-		view.refreshAllCalendarEntries();
-		
-	    Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
-	    List<CalendarEntryEntity> databaseEntries = thisStudent.getCalendarEntries();
-	    databaseEntries.forEach(databaseEntry -> {
-	    	Entry calendarEntry;
-	    	
-	    	if(databaseEntry.isRecurring()) {
-	    		calendarEntry = EntryManager.createRecurringEvent(databaseEntry);
-	    	} else {
-	    		if(databaseEntry.isAllDay()) {
-	    			calendarEntry = EntryManager.createDayEntry(databaseEntry);
-	    		} else {
-	    			calendarEntry = EntryManager.createTimedEntry(databaseEntry);
-	    		}
-	    	}
-	    	
-	    	view.addCalendarEntry(calendarEntry);
-	    });
-	    
-	    view.refreshAllCalendarEntries();		
-	}
 	
 	private void updateAllData() {
 		updateChart(view.getSelectedMonth());
-		updateCalendar();
 		updateSessionGrid();
 	}
 
