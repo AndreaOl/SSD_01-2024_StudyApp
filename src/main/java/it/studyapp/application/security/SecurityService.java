@@ -4,11 +4,15 @@ import it.studyapp.application.security.vaadin.LogoutUtil;
 import it.studyapp.application.service.CurrentSession;
 import it.studyapp.application.service.UserInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class SecurityService {
+	
+	private final Logger logger = LoggerFactory.getLogger(SecurityService.class);
 
     private final CurrentSession currentSession;
     private final LogoutUtil logoutUtil;
@@ -27,6 +31,8 @@ public class SecurityService {
     }
 
     public void logout() {
+    	logger.info(currentSession.getCurrentUser().get().getUsername() + " logged out");
+    	
     	logoutUtil.logout();
     }
     

@@ -14,7 +14,7 @@ import it.studyapp.application.security.SecurityService;
 
 @Service
 public class CalendarService {
-
+	
 	private final DataService dataService;
 	private final SecurityService securityService;
 
@@ -27,7 +27,7 @@ public class CalendarService {
 		this.securityService = securityService;
 	}
 
-	public void checkEvents() {
+	public void checkEvents() {		
 		deleteOldReminders();
 		
 		weekEvents = new ArrayList<Session>();
@@ -66,7 +66,7 @@ public class CalendarService {
 		Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
 		
 		reminders.add(new Reminder("You have " + weekEvents.size() + " sessions in the next 7 days", thisStudent));
-		
+				
 		tomorrowEvents.forEach(session ->{
 			String sessionTime = session.getDate().format(DateTimeFormatter.ofPattern("HH:mm"));
 			String sessionSubject = session.getSubject();

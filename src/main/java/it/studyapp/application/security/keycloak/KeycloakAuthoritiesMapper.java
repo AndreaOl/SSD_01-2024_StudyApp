@@ -1,5 +1,7 @@
 package it.studyapp.application.security.keycloak;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +24,8 @@ import java.util.Set;
 class KeycloakAuthoritiesMapper implements GrantedAuthoritiesMapper {
 
     private final String clientId;
+    
+    private final Logger logger = LoggerFactory.getLogger(KeycloakAuthoritiesMapper.class);
 
     KeycloakAuthoritiesMapper(@Value("${spring.security.oauth2.client.registration.keycloak.client-id}") String clientId) {
         this.clientId = clientId;
@@ -35,7 +39,6 @@ class KeycloakAuthoritiesMapper implements GrantedAuthoritiesMapper {
         
         if (authority instanceof OidcUserAuthority oidcUserAuthority) {
             OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
-            System.out.println(userInfo.getClaims());
             if (userInfo.hasClaim("resource_access")) {
                 var resourceAccess = userInfo.getClaimAsMap("resource_access");
                 var roles = (Collection<String>) ((Map<String, Object>) resourceAccess.get(clientId)).get("roles");
@@ -43,10 +46,12 @@ class KeycloakAuthoritiesMapper implements GrantedAuthoritiesMapper {
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                         .toList());
             } else
-            	System.out.println("No resource_access claim");
+            	logger.warn("User " + userInfo.getPreferredUsername() + " has no resource_access claim");
         } else
-        	System.out.println("Not an instance of OidcUserAuthority");
-        System.out.println(mappedAuthorities);
+        	logger.warn("Authority is not an instance of OidcUserAuthority");
+        
+        logger.info("Mapped authorities: " + mappedAuthorities);
+        
         return mappedAuthorities;
     }
 }

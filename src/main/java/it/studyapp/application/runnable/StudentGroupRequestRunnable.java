@@ -1,5 +1,8 @@
 package it.studyapp.application.runnable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 
@@ -12,6 +15,8 @@ import it.studyapp.application.security.SecurityService;
 import it.studyapp.application.service.DataService;
 
 public class StudentGroupRequestRunnable implements Runnable {
+	
+	private final Logger logger = LoggerFactory.getLogger(StudentGroupRequestRunnable.class);
 
 	private DataService dataService;
 	private SecurityService securityService;
@@ -31,6 +36,8 @@ public class StudentGroupRequestRunnable implements Runnable {
 		if(studentGroup != null && !studentGroup.getMembers().contains(notifiedStudent)) {
 			studentGroup.addMember(notifiedStudent);
 			dataService.saveStudentGroup(studentGroup);
+			
+			logger.info(notifiedStudent.getUsername() + " joined group " + studentGroup.getId());
 
 			studentGroupRequest.setAccepted(Boolean.valueOf(true));
 			dataService.saveStudentGroupRequest(studentGroupRequest);

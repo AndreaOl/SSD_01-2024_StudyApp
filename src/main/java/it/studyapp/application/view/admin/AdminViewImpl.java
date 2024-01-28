@@ -3,6 +3,10 @@ package it.studyapp.application.view.admin;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
@@ -28,6 +32,7 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private final Logger logger = LoggerFactory.getLogger(AdminViewImpl.class);
 	
 	private AdminPresenter presenter;
 	
@@ -64,6 +69,9 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
 		
 		this.presenter = presenter;
 		this.presenter.setView(this);
+		
+		logger.warn("Admin " + UI.getCurrent() + ": Navigation to Administration page");
+		
 		this.presenter.updateSessionGrid();
 		this.presenter.updateGroupGrid();
 		this.presenter.updateStudentGrid();

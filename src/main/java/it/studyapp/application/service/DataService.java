@@ -2,6 +2,8 @@ package it.studyapp.application.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import it.studyapp.application.entity.NotificationEntity;
@@ -21,6 +23,8 @@ import it.studyapp.application.repository.StudentRepository;
 
 @Service
 public class DataService {
+	
+	private final Logger logger = LoggerFactory.getLogger(DataService.class);
 
 	private final StudentRepository studentRepository;
 	private final StudentGroupRepository studentGroupRepository;
@@ -111,7 +115,7 @@ public class DataService {
 
 	public Student saveStudent(Student student) {
 		if(student == null) {
-			System.err.println("User is null");
+			logger.error("Student is null");
 			return null;
 		}
 		return studentRepository.save(student);
@@ -119,7 +123,7 @@ public class DataService {
 
 	public StudentGroup saveStudentGroup(StudentGroup studentGroup) {
 		if(studentGroup == null) {
-			System.err.println("Student group is null");
+			logger.error("Student group is null");
 			return null;
 		}
 		return studentGroupRepository.save(studentGroup);
@@ -127,7 +131,7 @@ public class DataService {
 
 	public Session saveSession(Session session) {
 		if(session == null) {
-			System.err.println("Session is null");
+			logger.error("Session is null");
 			return null;
 		}
 		return sessionRepository.save(session);
@@ -135,7 +139,7 @@ public class DataService {
 	
 	public NotificationEntity saveNotification(NotificationEntity notification) {
 		if(notification == null) {
-			System.err.println("Notification is null");
+			logger.error("Notification is null");
 			return null;
 		}
 		return notificationEntityRepository.save(notification);
@@ -143,7 +147,7 @@ public class DataService {
 	
 	public SessionRequest saveSessionRequest(SessionRequest sessionRequest) {
 		if(sessionRequest == null) {
-			System.err.println("Session Request is null");
+			logger.error("Session Request is null");
 			return null;
 		}
 		return sessionRequestRepository.save(sessionRequest);
@@ -151,7 +155,7 @@ public class DataService {
 	
 	public StudentGroupRequest saveStudentGroupRequest(StudentGroupRequest studentGroupRequest) {
 		if(studentGroupRequest == null) {
-			System.err.println("Student Group Request is null");
+			logger.error("Student Group Request is null");
 			return null;
 		}
 		return studentGroupRequestRepository.save(studentGroupRequest);
@@ -159,7 +163,7 @@ public class DataService {
 	
 	public Reminder saveReminder(Reminder reminder) {
 		if(reminder == null) {
-			System.err.println("Reminder is null");
+			logger.error("Reminder is null");
 			return null;
 		}
 		return reminderRepository.save(reminder);
@@ -170,7 +174,7 @@ public class DataService {
 
 	public void updateStudent(Student student) {
 		if(student == null) {
-			System.err.println("User is null");
+			logger.error("Student is null");
 			return;
 		}
 		studentRepository.update(student.getFirstName(), student.getLastName(),
@@ -180,7 +184,7 @@ public class DataService {
 	
 	public void updateSession(Session session) {
 		if(session == null) {
-			System.err.println("Session is null");
+			logger.error("Session is null");
 			return;
 		}
 		sessionRepository.update(session.getSubject(), session.getDate(), session.getLocation(), session.getOwner(), session.getId());

@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -37,6 +39,7 @@ import it.studyapp.application.view.group.GroupView;
 public class GroupPresenterImpl implements GroupPresenter {
 
 	private GroupView view;
+	private final Logger logger = LoggerFactory.getLogger(GroupPresenterImpl.class);
 	
 	@Autowired
 	private DataService dataService;
@@ -90,6 +93,8 @@ public class GroupPresenterImpl implements GroupPresenter {
 		selectedGroup = null;
 		view.hideMembers();
 		
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " is creating a group.");
+		
 		StudentGroupDialog studentGroupDialog = new StudentGroupDialog(dataService, securityService, null);
 		studentGroupDialog.setOnSaveBiConsumer(this::onStudentGroupCreated);
 		studentGroupDialog.open();		
@@ -99,10 +104,14 @@ public class GroupPresenterImpl implements GroupPresenter {
 	public void leaveGroup() {
 		Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
 		
+		logger.info(thisStudent.getUsername() + " left group " + selectedGroup.getId());
+		
 		if(thisStudent.equals(selectedGroup.getOwner())) {
-			if(selectedGroup.getMembers().size() > 1)
+			if(selectedGroup.getMembers().size() > 1) {
 				selectedGroup.setOwner(selectedGroup.getMembers().get(1));
-			else {
+				logger.info(selectedGroup.getOwner() + " is now the owner of group " + selectedGroup.getId());
+			} else {
+				logger.info("No members left in group " + selectedGroup.getId());
 				onStudentGroupRemoved(selectedGroup);
 				view.hideMembers();
 				return;
@@ -140,6 +149,9 @@ public class GroupPresenterImpl implements GroupPresenter {
 	public void onGroupDoubleClick(StudentGroup studentGroup) {
 		if(!studentGroup.getOwner().getUsername().equals(securityService.getAuthenticatedUser().getUsername()))
 			return;
+		
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " clicked group " + studentGroup.getId());
+		
 		StudentGroupDialog studentGroupDialog = new StudentGroupDialog(dataService, securityService, studentGroup);
 		studentGroupDialog.setOnSaveBiConsumer(this::onStudentGroupUpdated);
 		studentGroupDialog.setOnRemoveConsumer(this::onStudentGroupRemoved);
@@ -157,6 +169,8 @@ public class GroupPresenterImpl implements GroupPresenter {
 
 	@Override
 	public void createSession() {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " is creating a session for group " + selectedGroup.getId());
+		
 		SessionDialog sessionDiag = new SessionDialog(dataService, securityService, null, selectedGroup);
 		sessionDiag.setOnSaveBiConsumer(this::onSessionCreated);
 		sessionDiag.open();			
@@ -164,6 +178,8 @@ public class GroupPresenterImpl implements GroupPresenter {
 	
 
 	private void onStudentGroupCreated(StudentGroup studentGroup, Set<Student> selectedStudents) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " created group " + studentGroup.getId());
+		
 		studentGroup.addMember(studentGroup.getOwner());
 		dataService.saveStudentGroup(studentGroup);
 
@@ -177,6 +193,12 @@ public class GroupPresenterImpl implements GroupPresenter {
 				ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupRequestCreatedEvent(UI.getCurrent(), false, persistentSGR)));
 		});
 		
+		StringBuilder createLog = new StringBuilder();
+		createLog.append("Group " + studentGroup.getId() + " created by " + studentGroup.getOwner() + ". Invites sent to: ");
+		createLog.append(String.join(", ", selectedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(createLog.toString());
+		
 		UI ui = Application.getUserUI("admin");
 		if(ui != null)
 			ui.access(() -> ComponentUtil.fireEvent(ui, new StudentGroupUpdatedEvent(UI.getCurrent(), false)));
@@ -185,6 +207,8 @@ public class GroupPresenterImpl implements GroupPresenter {
 	}
 
 	private void onStudentGroupRemoved(StudentGroup studentGroup) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " removed group " + studentGroup.getId());
+		
 		Set<Student> groupMembers = new HashSet<>(studentGroup.getMembers());
 
 		dataService.deleteStudentGroup(studentGroup);
@@ -209,9 +233,12 @@ public class GroupPresenterImpl implements GroupPresenter {
 	}
 
 	private void onStudentGroupUpdated(StudentGroup studentGroup, Set<Student> unmodifiableSelectedStudents) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " updated group " + studentGroup.getId());
+		
 		Set<Student> oldParticipants = new HashSet<Student>(studentGroup.getMembers());
 		Set<Student> selectedStudents = new HashSet<>(unmodifiableSelectedStudents);
 		Set<Student> removedStudents = new HashSet<>();
+		Set<Student> invitedStudents = new HashSet<>();
 		
 		studentGroup.getMembers().forEach(s -> {			
 			if(s.getUsername().equals(securityService.getAuthenticatedUser().getUsername()))
@@ -237,6 +264,8 @@ public class GroupPresenterImpl implements GroupPresenter {
 					ui.access(() -> ComponentUtil.fireEvent(ui, new NotificationCreatedEvent(UI.getCurrent(), false, persistentN)));
 				
 			} else {
+				invitedStudents.add(s);
+				
 				StudentGroupRequest sgr = new StudentGroupRequest(studentGroup.getOwner().getUsername() + 
 						" invited you to the group " + studentGroup.getName(), s, studentGroup.getId());
 				final StudentGroupRequest persistentSGR = dataService.saveStudentGroupRequest(sgr);
@@ -248,6 +277,16 @@ public class GroupPresenterImpl implements GroupPresenter {
 		});
 
 		StudentGroup persistentStudentGroup = dataService.saveStudentGroup(studentGroup);
+		
+		StringBuilder updateLog = new StringBuilder();
+		updateLog.append("Group " + persistentStudentGroup.getId() + " updated by " + persistentStudentGroup.getOwner() + ". Members: ");
+		updateLog.append(String.join(", ", persistentStudentGroup.getMembers().stream().map(Student::getUsername).toList()));
+		updateLog.append(". Removed students: ");
+		updateLog.append(String.join(", ", removedStudents.stream().map(Student::getUsername).toList()));
+		updateLog.append(". Invites sent to: ");
+		updateLog.append(String.join(", ", invitedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(updateLog.toString());
 		
 		persistentStudentGroup.getMembers().forEach(s -> {			
 			UI ui = Application.getUserUI(s.getUsername());
@@ -267,6 +306,9 @@ public class GroupPresenterImpl implements GroupPresenter {
 	}
 	
 	private void onSessionCreated(Session session, Set<Student> selectedStudents) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " created session " + session.getId()
+					+ " for group " + selectedGroup.getId());
+		
 		session.addParticipant(session.getOwner());
 		dataService.saveSession(session);
 		
@@ -280,6 +322,12 @@ public class GroupPresenterImpl implements GroupPresenter {
 				ui.access(() -> ComponentUtil.fireEvent(ui, new SessionRequestCreatedEvent(UI.getCurrent(), false, persistentSR)));
 
 		});
+		
+		StringBuilder createLog = new StringBuilder();
+		createLog.append("Session " + session.getId() + " created by " + session.getOwner() + ". Invites sent to: ");
+		createLog.append(String.join(", ", selectedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(createLog.toString());
 		
 		UI ui = Application.getUserUI("admin");
 		if(ui != null)

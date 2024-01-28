@@ -1,5 +1,8 @@
 package it.studyapp.application.ui.form.profile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
@@ -13,6 +16,8 @@ import it.studyapp.application.event.ProfileUpdatedEvent;
 import it.studyapp.application.presenter.profile.ProfilePresenter;
 
 public class ProfileFormBinder {
+	
+	private final Logger logger = LoggerFactory.getLogger(ProfileFormBinder.class);
 
 	private ProfileForm profileForm;
 
@@ -69,6 +74,8 @@ public class ProfileFormBinder {
 
 				// Run validators and write the values to the bean
 				binder.writeBean(userBean);
+				
+				logger.info("Updating user " + userBean.getUsername());
 
 				presenter.updateUser(userBean);
 				
@@ -83,7 +90,7 @@ public class ProfileFormBinder {
 					ui.access(() -> ComponentUtil.fireEvent(ui, new ProfileUpdatedEvent(UI.getCurrent(), false, userBean.getUsername())));
 				
 			} catch (ValidationException exception) {
-
+				logger.error("Something went wrong trying to update user " + profileForm.getStudent().getUsername());
 				// validation errors are already visible for each field,
 				// and bean-level errors are shown in the status label.
 				// We could show additional messages here if we want, do logging, etc.

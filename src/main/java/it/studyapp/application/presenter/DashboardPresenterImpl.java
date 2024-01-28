@@ -42,7 +42,7 @@ public class DashboardPresenterImpl implements DashboardPresenter {
 	@Autowired
 	private SecurityService securityService;
 
-	public DashboardPresenterImpl() {		
+	public DashboardPresenterImpl() {
 		ComponentUtil.addListener(UI.getCurrent(), SessionRequestAcceptedEvent.class, e -> updateAllData());
 		ComponentUtil.addListener(UI.getCurrent(), SessionUpdatedEvent.class, e -> updateAllData());
 		ComponentUtil.addListener(UI.getCurrent(), SessionRemovedEvent.class, e -> updateAllData());

@@ -1,5 +1,7 @@
 package it.studyapp.application.security.keycloak;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -25,6 +27,8 @@ class KeycloakBackChannelLogoutController {
 
     private final JwtDecoder jwtDecoder;
     private final HttpSessionRepository sessionRepository;
+    
+    private final Logger logger = LoggerFactory.getLogger(KeycloakBackChannelLogoutController.class);
 
     KeycloakBackChannelLogoutController(ClientRegistrationRepository clientRegistrationRepository,
                                         HttpSessionRepository sessionRepository) {
@@ -35,12 +39,16 @@ class KeycloakBackChannelLogoutController {
 
     @PostMapping("/back-channel-logout")
     public void logout(@RequestParam("logout_token") String rawLogoutToken) {
+    	logger.info("Received back-channel logout request");
+    	
         var logoutToken = jwtDecoder.decode(rawLogoutToken);
         var sessionId = logoutToken.getClaimAsString("sid");
         invalidateSession(sessionId);
     }
 
     private void invalidateSession(String keycloakSessionId) {
+    	logger.info("Invalidating session " + keycloakSessionId);
+    	
         sessionRepository.invalidate(session ->
                 extractSecurityContext(session)
                         .map(SecurityContext::getAuthentication)

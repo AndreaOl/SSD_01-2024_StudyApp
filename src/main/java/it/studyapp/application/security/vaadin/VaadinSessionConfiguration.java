@@ -1,6 +1,9 @@
 package it.studyapp.application.security.vaadin;
 
 import com.vaadin.flow.server.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -12,6 +15,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 class VaadinSessionConfiguration implements VaadinServiceInitListener, SystemMessagesProvider, SessionDestroyListener {
 
     private final String relativeSessionExpiredUrl;
+    
+    private final Logger logger = LoggerFactory.getLogger(VaadinSessionConfiguration.class);
 
     VaadinSessionConfiguration(ServerProperties serverProperties) {
         relativeSessionExpiredUrl = UriComponentsBuilder.fromPath(serverProperties.getServlet().getContextPath()).path("session-expired.html").build().toUriString();
@@ -33,6 +38,8 @@ class VaadinSessionConfiguration implements VaadinServiceInitListener, SystemMes
         // token.
         try {
             event.getSession().getSession().invalidate();
+            
+            logger.info("Session " + event.getSession().getSession().getId() + " invalidated");
         } catch (Exception ignore) {
             // Session was probably already invalidated.
         }
