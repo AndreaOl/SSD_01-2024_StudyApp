@@ -97,7 +97,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 
 	@Override
 	public void onSessionDoubleClick(Session session) {
-		logger.info("Admin clicked session " + session.getId() + "(Owner: " + session.getOwner() + ").");
+		logger.info("Admin clicked session " + session.getId() + "(Owner: " + session.getOwner().getUsername() + ").");
 		
 		SessionDialog sessionDiag = new SessionDialog(dataService, securityService, session, null);
 		sessionDiag.setOnSaveBiConsumer(this::onSessionUpdated);
@@ -113,7 +113,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 		dataService.saveSession(session);
 		
 		StringBuilder createLog = new StringBuilder();
-		createLog.append("Session " + session.getId() + " created by admin. Owner: " + session.getOwner() + ". Participants: ");
+		createLog.append("Session " + session.getId() + " created by admin. Owner: " + session.getOwner().getUsername() + ". Participants: ");
 		createLog.append(String.join(", ", session.getParticipants().stream().map(Student::getUsername).toList()));
 		
 		logger.info(createLog.toString());
@@ -128,7 +128,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onSessionRemoved(Session session) {
-		logger.info("Admin removed session " + session.getId() + "(Owner: " + session.getOwner() + ").");
+		logger.info("Admin removed session " + session.getId() + "(Owner: " + session.getOwner().getUsername() + ").");
 		
 		Set<Student> sessionParticipants = new HashSet<>(session.getParticipants());
 	
@@ -152,7 +152,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onSessionUpdated(Session session, Set<Student> selectedStudents) {
-		logger.info("Admin updated session " + session.getId() + "(Owner: " + session.getOwner() + ").");
+		logger.info("Admin updated session " + session.getId() + "(Owner: " + session.getOwner().getUsername() + ").");
 		
 		if(selectedStudents.isEmpty()) {
 			onSessionRemoved(session);
@@ -175,7 +175,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 		Session persistentSession = dataService.saveSession(session);	
 		
 		StringBuilder updateLog = new StringBuilder();
-		updateLog.append("Session " + persistentSession.getId() + " updated by admin. Owner: " + persistentSession.getOwner() + ". Participants: ");
+		updateLog.append("Session " + persistentSession.getId() + " updated by admin. Owner: " + persistentSession.getOwner().getUsername() + ". Participants: ");
 		updateLog.append(String.join(", ", persistentSession.getParticipants().stream().map(Student::getUsername).toList()));
 		updateLog.append(". Removed students: ");
 		updateLog.append(String.join(", ", removedStudents.stream().map(Student::getUsername).toList()));

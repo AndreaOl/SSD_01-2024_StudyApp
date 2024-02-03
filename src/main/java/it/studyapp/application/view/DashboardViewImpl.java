@@ -142,7 +142,10 @@ public class DashboardViewImpl extends Main implements DashboardView {
 		sessionGrid.getColumns().forEach(col -> col.setAutoWidth(true));
 		sessionGrid.setWidth("95%");
 		sessionGrid.addItemClickListener(click -> {
-			UI.getCurrent().navigate("sessions");
+			if(presenter.isAdmin())
+				UI.getCurrent().navigate("admin");
+			else
+				UI.getCurrent().navigate("sessions");
 		});
 
 		// Add it all together

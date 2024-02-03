@@ -5,8 +5,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.vaadin.flow.component.html.Image;
 
+import it.studyapp.application.security.Roles;
 import it.studyapp.application.service.UserInfo;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
@@ -47,6 +50,9 @@ public class Student extends AbstractEntity {
 
 	private int avatar;
 	
+	@NotNull
+	private List<String> roles = new ArrayList<>();
+	
 	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
 	@NotNull
 	private List<Session> sessions = new ArrayList<>();
@@ -68,6 +74,7 @@ public class Student extends AbstractEntity {
 		this.birthDate = LocalDate.now();
 		this.yearFollowing = null;
 		this.avatar = 0;
+		this.roles.add(Roles.USER);
 	}
 
 	public Student(@NotBlank String username, @NotBlank String keycloakId, @NotBlank String firstName,
@@ -82,6 +89,7 @@ public class Student extends AbstractEntity {
 		this.yearFollowing = yearFollowing;
 		this.email = email;
 		this.avatar = avatar;
+		this.roles.add(Roles.USER);
 	}	
 
 	public Student(UserInfo user) {
@@ -94,6 +102,12 @@ public class Student extends AbstractEntity {
 		this.birthDate = LocalDate.parse(user.getBirthDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		this.fieldOfStudy = user.getFieldOfStudy();
 		this.yearFollowing = user.getYearFollowing();
+		
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            this.roles = authentication.getAuthorities().stream().map(auth -> auth.getAuthority()).toList();
+        } else
+        	this.roles.add(Roles.USER);
 	}
 	
 	
@@ -177,6 +191,18 @@ public class Student extends AbstractEntity {
 
 	public void setFieldOfStudy(String fieldOfStudy) {
 		this.fieldOfStudy = fieldOfStudy;
+	}
+	
+	public List<String> getRoles() {
+		return roles;
+	}
+	
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+	
+	public boolean hasRole(String role) {
+		return this.roles.contains(role);
 	}
 
 	public List<Session> getSessions() {
