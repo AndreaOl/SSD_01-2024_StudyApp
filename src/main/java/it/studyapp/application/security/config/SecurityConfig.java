@@ -3,6 +3,7 @@ package it.studyapp.application.security.config;
 import com.vaadin.flow.spring.security.VaadinSavedRequestAwareAuthenticationSuccessHandler;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,12 +28,17 @@ class SecurityConfig extends VaadinWebSecurity {
 
     final ClientRegistrationRepository clientRegistrationRepository;
     final GrantedAuthoritiesMapper authoritiesMapper;
+    
+    final String baseUrl;
 
     SecurityConfig(ClientRegistrationRepository clientRegistrationRepository,
-                   GrantedAuthoritiesMapper authoritiesMapper) {
+                   GrantedAuthoritiesMapper authoritiesMapper,
+                   @Value("${studyapp.base-url}") String baseUrl) {
         this.clientRegistrationRepository = clientRegistrationRepository;
         this.authoritiesMapper = authoritiesMapper;
         SecurityContextHolder.setStrategyName(VaadinAwareSecurityContextHolderStrategy.class.getName());
+        
+        this.baseUrl = baseUrl;
     }
 
     @Bean
@@ -86,7 +92,7 @@ class SecurityConfig extends VaadinWebSecurity {
 
     private OidcClientInitiatedLogoutSuccessHandler logoutSuccessHandler() {
         var logoutSuccessHandler = new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-        logoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/logged-out.html");
+        logoutSuccessHandler.setPostLogoutRedirectUri(baseUrl + "logged-out.html");
         return logoutSuccessHandler;
     }
 

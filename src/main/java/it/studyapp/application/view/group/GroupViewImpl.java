@@ -2,6 +2,10 @@ package it.studyapp.application.view.group;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -27,7 +31,8 @@ public class GroupViewImpl extends VerticalLayout implements GroupView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+	private final Logger logger = LoggerFactory.getLogger(GroupViewImpl.class);
+
 	private Grid<StudentGroup> groupGrid = new Grid<>(StudentGroup.class);
 	private Grid<Student> membersGrid = new Grid<>(Student.class);
 	private HorizontalLayout groupGridHeader = new HorizontalLayout();
@@ -51,6 +56,9 @@ public class GroupViewImpl extends VerticalLayout implements GroupView {
 		
 		this.presenter = presenter;
 		this.presenter.setView(this);
+		
+		logger.info(UI.getCurrent() + ": Navigation to Groups page");
+		
 		this.presenter.updateGroupGrid();
 	}
 

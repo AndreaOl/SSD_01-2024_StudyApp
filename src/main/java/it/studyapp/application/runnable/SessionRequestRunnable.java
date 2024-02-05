@@ -1,5 +1,8 @@
 package it.studyapp.application.runnable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 
@@ -12,6 +15,8 @@ import it.studyapp.application.security.SecurityService;
 import it.studyapp.application.service.DataService;
 
 public class SessionRequestRunnable implements Runnable {
+	
+	private final Logger logger = LoggerFactory.getLogger(SessionRequestRunnable.class);
 	
 	private DataService dataService;
 	private SecurityService securityService;
@@ -31,6 +36,8 @@ public class SessionRequestRunnable implements Runnable {
 		if(session != null && !session.getParticipants().contains(notifiedStudent)) {		
 			session.addParticipant(notifiedStudent);
 			dataService.saveSession(session);
+			
+			logger.info(notifiedStudent.getUsername() + " joined session " + session.getId());
 	        
 	        sessionRequest.setAccepted(Boolean.valueOf(true));
 	        dataService.saveSessionRequest(sessionRequest);

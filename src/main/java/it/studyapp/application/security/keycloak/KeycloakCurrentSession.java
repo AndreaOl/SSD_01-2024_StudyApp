@@ -31,17 +31,17 @@ class KeycloakCurrentSession implements CurrentSession {
 
 			@Override
             public String getUsername() {
-                return requireNonNullElse(user.getAttribute("preferred_username"), "");
+                return requireNonNull(user.getAttribute("preferred_username"));
             }
 
             @Override
             public String getFirstName() {
-                return requireNonNullElse(user.getAttribute("given_name"), "");
+                return requireNonNullElse(user.getAttribute("given_name"), "Name");
             }
 
             @Override
             public String getLastName() {
-                return requireNonNullElse(user.getAttribute("family_name"), "");
+                return requireNonNullElse(user.getAttribute("family_name"), "Surname");
             }
 
             @Override
@@ -56,22 +56,22 @@ class KeycloakCurrentSession implements CurrentSession {
 
 			@Override
 			public String getEmail() {
-				return requireNonNullElse(user.getAttribute("email"), "");
+				return requireNonNull(user.getAttribute("email"));
 			}
 
 			@Override
 			public String getYearFollowing() {
-				return requireNonNullElse(user.getAttribute("yearFollowing"), "");
+				return requireNonNullElse(user.getAttribute("yearFollowing"), "1° Anno");
 			}
 
 			@Override
 			public String getBirthDate() {
-				return requireNonNullElse(user.getAttribute("birthDate"), "");
+				return requireNonNullElse(user.getAttribute("birthDate"), "2000-01-26");
 			}
 
 			@Override
 			public String getFieldOfStudy() {
-				return requireNonNullElse(user.getAttribute("fieldOfStudy"), "");
+				return requireNonNullElse(user.getAttribute("fieldOfStudy"), "University");
 			};
         });
     }

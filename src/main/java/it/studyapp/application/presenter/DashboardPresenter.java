@@ -9,5 +9,6 @@ public interface DashboardPresenter {
 	public void setView(DashboardView view);
 	public void updateChart(YearMonth selectedYearMonth);
 	public void updateSessionGrid();
+	public boolean isAdmin();
 
 }

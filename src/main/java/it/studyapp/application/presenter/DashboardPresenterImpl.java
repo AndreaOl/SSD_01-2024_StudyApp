@@ -42,7 +42,7 @@ public class DashboardPresenterImpl implements DashboardPresenter {
 	@Autowired
 	private SecurityService securityService;
 
-	public DashboardPresenterImpl() {		
+	public DashboardPresenterImpl() {
 		ComponentUtil.addListener(UI.getCurrent(), SessionRequestAcceptedEvent.class, e -> updateAllData());
 		ComponentUtil.addListener(UI.getCurrent(), SessionUpdatedEvent.class, e -> updateAllData());
 		ComponentUtil.addListener(UI.getCurrent(), SessionRemovedEvent.class, e -> updateAllData());
@@ -56,11 +56,19 @@ public class DashboardPresenterImpl implements DashboardPresenter {
 	@Override
 	public void updateChart(YearMonth selectedYearMonth) {
 		List<Series> newSeriesList = new ArrayList<>();
-		Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
+		List<Session> monthSessions;
 		
-		List<Session> monthSessions = thisStudent.getSessions().stream()
-				.filter(s -> s.getDate().getMonthValue() == selectedYearMonth.getMonthValue())
-				.collect(Collectors.toList());
+		if(!securityService.isAdmin()) {
+			Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
+			
+			monthSessions = thisStudent.getSessions().stream()
+					.filter(s -> s.getDate().getMonthValue() == selectedYearMonth.getMonthValue())
+					.collect(Collectors.toList());
+		} else {
+			monthSessions = dataService.findAllSessions().stream()
+					.filter(s -> s.getDate().getMonthValue() == selectedYearMonth.getMonthValue())
+					.collect(Collectors.toList());
+		}
 		
 		int last_idx = selectedYearMonth.isValidDay(29) ? 4 : 3;
 		
@@ -106,15 +114,27 @@ public class DashboardPresenterImpl implements DashboardPresenter {
 	}
 
 	@Override
-	public void updateSessionGrid() {		
-		Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
-	
-		List<Session> lss = thisStudent.getSessions();
+	public void updateSessionGrid() {
+		List<Session> lss;
+		
+		if(!securityService.isAdmin()) {
+			Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
+		
+			lss = thisStudent.getSessions();
+		} else {
+			lss = dataService.findAllSessions();
+		}
+		
 		Collections.sort(lss, Comparator.comparing(Session::getDate));
 		
 		view.setSessionGridItems(lss);
 	}
 	
+	@Override
+	public boolean isAdmin() {
+		return securityService.isAdmin();
+	}
+
 	private void updateAllData() {
 		updateChart(view.getSelectedMonth());
 		updateSessionGrid();

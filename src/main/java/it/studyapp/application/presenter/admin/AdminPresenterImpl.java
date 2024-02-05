@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -39,6 +41,7 @@ import it.studyapp.application.view.admin.AdminView;
 public class AdminPresenterImpl implements AdminPresenter {
 	
 	private AdminView view;
+	private final Logger logger = LoggerFactory.getLogger(AdminPresenterImpl.class);
 	
 	@Autowired
 	private DataService dataService;
@@ -46,7 +49,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 	@Autowired
 	private SecurityService securityService;
 	
-	public AdminPresenterImpl() {
+	public AdminPresenterImpl() {		
 		UI currentUI = UI.getCurrent();
 		
 		if(currentUI != null) {
@@ -84,7 +87,9 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	@Override
-	public void createSession() {		
+	public void createSession() {
+		logger.info("Admin is creating a session.");
+		
 		SessionDialog sessionDiag = new SessionDialog(dataService, securityService, null, null);
 		sessionDiag.setOnSaveBiConsumer(this::onSessionCreated);
 		sessionDiag.open();	
@@ -92,6 +97,8 @@ public class AdminPresenterImpl implements AdminPresenter {
 
 	@Override
 	public void onSessionDoubleClick(Session session) {
+		logger.info("Admin clicked session " + session.getId() + "(Owner: " + session.getOwner().getUsername() + ").");
+		
 		SessionDialog sessionDiag = new SessionDialog(dataService, securityService, session, null);
 		sessionDiag.setOnSaveBiConsumer(this::onSessionUpdated);
 		sessionDiag.setOnRemoveConsumer(this::onSessionRemoved);
@@ -99,9 +106,17 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onSessionCreated(Session session, Set<Student> selectedStudents) {
+		logger.info("Admin created session " + session.getId() + "(Owner: " + session.getOwner() + ").");
+		
 		session.addParticipants(selectedStudents);
 		session.setOwner(session.getParticipants().get(0));
 		dataService.saveSession(session);
+		
+		StringBuilder createLog = new StringBuilder();
+		createLog.append("Session " + session.getId() + " created by admin. Owner: " + session.getOwner().getUsername() + ". Participants: ");
+		createLog.append(String.join(", ", session.getParticipants().stream().map(Student::getUsername).toList()));
+		
+		logger.info(createLog.toString());
 		
 		selectedStudents.forEach(s -> {
 			UI ui = Application.getUserUI(s.getUsername());
@@ -113,6 +128,8 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onSessionRemoved(Session session) {
+		logger.info("Admin removed session " + session.getId() + "(Owner: " + session.getOwner().getUsername() + ").");
+		
 		Set<Student> sessionParticipants = new HashSet<>(session.getParticipants());
 	
 		dataService.deleteSession(session);
@@ -135,6 +152,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onSessionUpdated(Session session, Set<Student> selectedStudents) {
+		logger.info("Admin updated session " + session.getId() + "(Owner: " + session.getOwner().getUsername() + ").");
 		
 		if(selectedStudents.isEmpty()) {
 			onSessionRemoved(session);
@@ -155,7 +173,15 @@ public class AdminPresenterImpl implements AdminPresenter {
 			session.setOwner(session.getParticipants().get(0));
 	
 		Session persistentSession = dataService.saveSession(session);	
-	
+		
+		StringBuilder updateLog = new StringBuilder();
+		updateLog.append("Session " + persistentSession.getId() + " updated by admin. Owner: " + persistentSession.getOwner().getUsername() + ". Participants: ");
+		updateLog.append(String.join(", ", persistentSession.getParticipants().stream().map(Student::getUsername).toList()));
+		updateLog.append(". Removed students: ");
+		updateLog.append(String.join(", ", removedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(updateLog.toString());
+		
 		persistentSession.getParticipants().forEach(s -> {
 			UI ui = Application.getUserUI(s.getUsername());
 			if(ui != null)
@@ -185,7 +211,9 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	@Override
-	public void createGroup() {		
+	public void createGroup() {
+		logger.info("Admin is creating a group.");
+		
 		StudentGroupDialog studentGroupDialog = new StudentGroupDialog(dataService, securityService, null);
 		studentGroupDialog.setOnSaveBiConsumer(this::onStudentGroupCreated);
 		studentGroupDialog.open();		
@@ -193,6 +221,8 @@ public class AdminPresenterImpl implements AdminPresenter {
 
 	@Override
 	public void onGroupDoubleClick(StudentGroup studentGroup) {
+		logger.info("Admin clicked group " + studentGroup.getId() + "(Owner: " + studentGroup.getOwner() + ").");
+		
 		StudentGroupDialog studentGroupDialog = new StudentGroupDialog(dataService, securityService, studentGroup);
 		studentGroupDialog.setOnSaveBiConsumer(this::onStudentGroupUpdated);
 		studentGroupDialog.setOnRemoveConsumer(this::onStudentGroupRemoved);
@@ -200,9 +230,17 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 	
 	private void onStudentGroupCreated(StudentGroup studentGroup, Set<Student> selectedStudents) {
+		logger.info("Admin created group " + studentGroup.getId() + "(Owner: " + studentGroup.getOwner() + ").");
+		
 		studentGroup.addMembers(selectedStudents);
 		studentGroup.setOwner(studentGroup.getMembers().get(0));
 		dataService.saveStudentGroup(studentGroup);
+		
+		StringBuilder createLog = new StringBuilder();
+		createLog.append("Group " + studentGroup.getId() + " created by admin. Owner: " + studentGroup.getOwner() + ". Members: ");
+		createLog.append(String.join(", ", studentGroup.getMembers().stream().map(Student::getUsername).toList()));
+		
+		logger.info(createLog.toString());
 
 		selectedStudents.forEach(s -> {			
 			UI ui = Application.getUserUI(s.getUsername());
@@ -214,6 +252,8 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onStudentGroupRemoved(StudentGroup studentGroup) {
+		logger.info("Admin removed group " + studentGroup.getId() + "(Owner: " + studentGroup.getOwner() + ").");
+		
 		Set<Student> groupMembers = new HashSet<>(studentGroup.getMembers());
 
 		dataService.deleteStudentGroup(studentGroup);
@@ -236,6 +276,7 @@ public class AdminPresenterImpl implements AdminPresenter {
 	}
 
 	private void onStudentGroupUpdated(StudentGroup studentGroup, Set<Student> selectedStudents) {
+		logger.info("Admin updated group " + studentGroup.getId() + "(Owner: " + studentGroup.getOwner() + ").");
 		
 		if(selectedStudents.isEmpty()) {
 			onStudentGroupRemoved(studentGroup);
@@ -256,6 +297,14 @@ public class AdminPresenterImpl implements AdminPresenter {
 			studentGroup.setOwner(studentGroup.getMembers().get(0));
 
 		StudentGroup persistentStudentGroup = dataService.saveStudentGroup(studentGroup);
+		
+		StringBuilder updateLog = new StringBuilder();
+		updateLog.append("Group " + persistentStudentGroup.getId() + " updated by admin. Owner: " + persistentStudentGroup.getOwner() + ". Members: ");
+		updateLog.append(String.join(", ", persistentStudentGroup.getMembers().stream().map(Student::getUsername).toList()));
+		updateLog.append(". Removed students: ");
+		updateLog.append(String.join(", ", removedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(updateLog.toString());
 		
 		persistentStudentGroup.getMembers().forEach(s -> {			
 			UI ui = Application.getUserUI(s.getUsername());

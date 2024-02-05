@@ -6,6 +6,8 @@ import it.studyapp.application.entity.Student;
 import it.studyapp.application.service.UserService;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ class KeycloakUserService implements UserService {
 	private KeycloakConfig keycloakConfig;
 	private final String appBaseUrl;
 	private final String clientId;
+	
+	private final Logger logger = LoggerFactory.getLogger(KeycloakUserService.class);
 	
 	public KeycloakUserService(KeycloakConfig keycloakConfig,
 							   @Value("${studyapp.base-url}") String appBaseUrl,
@@ -41,6 +45,8 @@ class KeycloakUserService implements UserService {
 	    
 	    UsersResource usersResource = getInstance();
 	    usersResource.get(student.getKeycloakId()).update(user);
+	    
+	    logger.info("Successfully updated user " + user.getUsername());
 	}
 
 	@Override
@@ -49,9 +55,11 @@ class KeycloakUserService implements UserService {
 
         usersResource.get(userId)
                 .executeActionsEmail(clientId, appBaseUrl, 600, List.of("UPDATE_PASSWORD"));
+        
+        logger.info("Email to reset password sent to user " + userId);
 	}
 
-    private UsersResource getInstance(){
+    private UsersResource getInstance() {
         return keycloakConfig.getInstance().realm(keycloakConfig.getRealm()).users();
     }
 

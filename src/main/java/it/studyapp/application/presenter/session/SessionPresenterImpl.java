@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -34,6 +36,7 @@ import it.studyapp.application.view.session.SessionView;
 public class SessionPresenterImpl implements SessionPresenter {
 	
 	private SessionView view;
+	private final Logger logger = LoggerFactory.getLogger(SessionPresenterImpl.class);
 	
 	@Autowired
 	private DataService dataService;
@@ -87,6 +90,8 @@ public class SessionPresenterImpl implements SessionPresenter {
 		selectedSession = null;
 		view.hideParticipants();
 		
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " is creating a session.");
+		
 		SessionDialog sessionDiag = new SessionDialog(dataService, securityService, null, null);
 		sessionDiag.setOnSaveBiConsumer(this::onSessionCreated);
 		sessionDiag.open();	
@@ -96,10 +101,15 @@ public class SessionPresenterImpl implements SessionPresenter {
 	public void leaveSession() {
 		Student thisStudent = dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0);
 		
+		logger.info(thisStudent.getUsername() + " left session " + selectedSession.getId());
+		
 		if(thisStudent.equals(selectedSession.getOwner())) {
-			if(selectedSession.getParticipants().size() > 1)
+			if(selectedSession.getParticipants().size() > 1) {
 				selectedSession.setOwner(selectedSession.getParticipants().get(1));
+				logger.info(selectedSession.getOwner() + " is now the owner of session " + selectedSession.getId());
+			}
 			else {
+				logger.info("No participants left in session " + selectedSession.getId());
 				onSessionRemoved(selectedSession);
 				view.hideParticipants();
 				return;
@@ -138,6 +148,9 @@ public class SessionPresenterImpl implements SessionPresenter {
 	public void onSessionDoubleClick(Session session) {
 		if(!session.getOwner().getUsername().equals(securityService.getAuthenticatedUser().getUsername()))
 			return;
+		
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " clicked session " + session.getId());
+		
 		SessionDialog sessionDiag = new SessionDialog(dataService, securityService, session, null);
 		sessionDiag.setOnSaveBiConsumer(this::onSessionUpdated);
 		sessionDiag.setOnRemoveConsumer(this::onSessionRemoved);
@@ -154,6 +167,8 @@ public class SessionPresenterImpl implements SessionPresenter {
 	}
 	
 	private void onSessionCreated(Session session, Set<Student> selectedStudents) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " created session " + session.getId());
+
 		session.addParticipant(session.getOwner());
 		dataService.saveSession(session);
 		
@@ -168,6 +183,12 @@ public class SessionPresenterImpl implements SessionPresenter {
 
 		});
 		
+		StringBuilder createLog = new StringBuilder();
+		createLog.append("Session " + session.getId() + " created by " + session.getOwner() + ". Invites sent to: ");
+		createLog.append(String.join(", ", selectedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(createLog.toString());
+		
 		UI ui = Application.getUserUI("admin");
 		if(ui != null)
 			ui.access(() -> ComponentUtil.fireEvent(ui, new SessionUpdatedEvent(UI.getCurrent(), false)));
@@ -176,6 +197,8 @@ public class SessionPresenterImpl implements SessionPresenter {
 	}
 
 	private void onSessionRemoved(Session session) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " removed session " + session.getId());
+
 		Set<Student> sessionParticipants = new HashSet<>(session.getParticipants());
 
 		dataService.deleteSession(session);
@@ -200,9 +223,12 @@ public class SessionPresenterImpl implements SessionPresenter {
 	}
 
 	private void onSessionUpdated(Session session, Set<Student> unmodifiableSelectedStudents) {
+		logger.info(securityService.getAuthenticatedUser().getUsername() + " updated session " + session.getId());
+
 		Set<Student> oldParticipants = new HashSet<Student>(session.getParticipants());
 		Set<Student> selectedStudents = new HashSet<>(unmodifiableSelectedStudents);
 		Set<Student> removedStudents = new HashSet<>();
+		Set<Student> invitedStudents = new HashSet<>();
 
 		session.getParticipants().forEach(s -> {
 			if(s.getUsername().equals(securityService.getAuthenticatedUser().getUsername()))
@@ -229,6 +255,8 @@ public class SessionPresenterImpl implements SessionPresenter {
 					ui.access(() -> ComponentUtil.fireEvent(ui, new NotificationCreatedEvent(UI.getCurrent(), false, persistentN)));	
 
 			} else {
+				invitedStudents.add(s);
+				
 				SessionRequest sr = new SessionRequest(session.getOwner().getUsername() + 
 						" invited you to the study session " + session.getSubject(), s, session.getId());
 				final SessionRequest persistentSR = dataService.saveSessionRequest(sr);
@@ -241,6 +269,15 @@ public class SessionPresenterImpl implements SessionPresenter {
 
 		Session persistentSession = dataService.saveSession(session);	
 
+		StringBuilder updateLog = new StringBuilder();
+		updateLog.append("Session " + persistentSession.getId() + " updated by " + persistentSession.getOwner() + ". Participants: ");
+		updateLog.append(String.join(", ", persistentSession.getParticipants().stream().map(Student::getUsername).toList()));
+		updateLog.append(". Removed students: ");
+		updateLog.append(String.join(", ", removedStudents.stream().map(Student::getUsername).toList()));
+		updateLog.append(". Invites sent to: ");
+		updateLog.append(String.join(", ", invitedStudents.stream().map(Student::getUsername).toList()));
+		
+		logger.info(updateLog.toString());
 
 		persistentSession.getParticipants().forEach(s -> {
 			UI ui = Application.getUserUI(s.getUsername());

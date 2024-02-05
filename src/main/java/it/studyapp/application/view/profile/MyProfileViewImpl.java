@@ -1,5 +1,9 @@
 package it.studyapp.application.view.profile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.notification.Notification;
@@ -22,9 +26,13 @@ public class MyProfileViewImpl extends VerticalLayout implements MyProfileView {
 
 	private static final long serialVersionUID = 1L;
 	private ProfilePresenter presenter;
+	
+	private final Logger logger = LoggerFactory.getLogger(MyProfileViewImpl.class);
 
 	public MyProfileViewImpl(ProfilePresenter presenter){
 		this.presenter = presenter;
+		
+		logger.info(UI.getCurrent() + ": Navigation to own profile");
 
 		addClassName("profile-view");
 		setSizeFull();

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class KeycloakConfig {
-
+	
     private Keycloak keycloak = null;
     private final String serverUrl;
     private final String realm;
@@ -37,13 +37,16 @@ public class KeycloakConfig {
                     .clientId(clientId)
                     .clientSecret(clientSecret)
                     .resteasyClient(new ResteasyClientBuilder()
-                            .connectionPoolSize(10)
-                            .build()
+                            			.connectionPoolSize(10)
+                            			.build()
                                    )
                     .build();
         }
         return keycloak;
     }
     
-    public String getRealm() {return realm;}
+    public String getRealm() {
+    	return realm;
+    }
+    
 }

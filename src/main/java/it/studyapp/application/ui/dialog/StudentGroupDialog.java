@@ -24,6 +24,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 
 import it.studyapp.application.entity.Student;
 import it.studyapp.application.entity.StudentGroup;
+import it.studyapp.application.security.Roles;
 import it.studyapp.application.security.SecurityService;
 import it.studyapp.application.service.DataService;
 
@@ -62,7 +63,7 @@ public class StudentGroupDialog extends Dialog {
                         .toLowerCase().indexOf(filterString.toLowerCase()) > -1;
                         
         fieldMembers = new MultiSelectComboBox<>("Invite other students");
-        List<Student> students = new ArrayList<>(dataService.findAllStudents());
+        List<Student> students = new ArrayList<>(dataService.findAllStudents().stream().filter(s -> !s.hasRole(Roles.ADMIN)).toList());
         students.remove(dataService.searchStudent(securityService.getAuthenticatedUser().getUsername()).get(0));
         fieldMembers.setItems(filter, students);
         fieldMembers.setItemLabelGenerator(Student::getUsername);

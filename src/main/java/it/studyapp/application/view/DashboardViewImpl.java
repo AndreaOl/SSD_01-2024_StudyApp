@@ -7,6 +7,9 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
@@ -43,6 +46,7 @@ public class DashboardViewImpl extends Main implements DashboardView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private final Logger logger = LoggerFactory.getLogger(DashboardViewImpl.class);
 	
 	private DashboardPresenter presenter;
 	
@@ -53,6 +57,8 @@ public class DashboardViewImpl extends Main implements DashboardView {
 	public DashboardViewImpl(DashboardPresenter presenter) {
 		this.presenter = presenter;
 		this.presenter.setView(this);
+		
+		logger.info(UI.getCurrent() + ": Navigation to Dashboard page");
 		
 		addClassName("dashboard-view");
 		setSizeFull();
@@ -136,7 +142,10 @@ public class DashboardViewImpl extends Main implements DashboardView {
 		sessionGrid.getColumns().forEach(col -> col.setAutoWidth(true));
 		sessionGrid.setWidth("95%");
 		sessionGrid.addItemClickListener(click -> {
-			UI.getCurrent().navigate("sessions");
+			if(presenter.isAdmin())
+				UI.getCurrent().navigate("admin");
+			else
+				UI.getCurrent().navigate("sessions");
 		});
 
 		// Add it all together

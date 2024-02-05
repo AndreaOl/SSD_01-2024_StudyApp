@@ -2,6 +2,8 @@ package it.studyapp.application.presenter.profile;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -25,8 +27,12 @@ public class ProfilePresenterImpl implements ProfilePresenter {
 	@Autowired
 	private SecurityService securityService;
 	
+	private final Logger logger = LoggerFactory.getLogger(ProfilePresenterImpl.class);
+	
 	@Override
 	public void updateUser(Student user) {
+		logger.info("Updating student " + user.getUsername());
+		
 		userService.updateUser(user);
 		
 		dataService.updateStudent(user);
@@ -41,14 +47,18 @@ public class ProfilePresenterImpl implements ProfilePresenter {
 	public Student searchStudent(String username) {
 		List<Student> studentList = dataService.searchStudent(username);
 		
-		if(studentList == null || studentList.isEmpty())
+		if(studentList == null || studentList.isEmpty()) {
+			logger.error("Student " + username + " not found.");
 			return null;
+		}
 		
 		return studentList.get(0);
 	}
 
 	@Override
 	public void resetPassword() {
+		logger.info("Password reset requested for user: " + securityService.getAuthenticatedUser().getUsername());
+		
 		userService.resetPassword(securityService.getAuthenticatedUser().getId());
 	}
 

@@ -1,5 +1,7 @@
 package it.studyapp.application.presenter.layout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,7 @@ import it.studyapp.application.view.layout.MainLayout;
 public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 	
 	private MainLayout view;
+	private final Logger logger = LoggerFactory.getLogger(MainLayoutPresenterImpl.class);
 	
 	private DataService dataService;
 	private SecurityService securityService;
@@ -55,6 +58,8 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
         if(dataService.searchStudent(currentUser.getUsername()).isEmpty()) {
         	Student newStudent = new Student(currentUser);
         	dataService.saveStudent(newStudent);
+        	
+        	logger.info("New student created with username: " + newStudent.getUsername());
         	
         	UI adminUI = Application.getUserUI("admin");
         	if(adminUI != null)
@@ -86,7 +91,7 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 		notificationsCount = thisStudent.getNotifications().size();
 		view.setNumberOfNotifications(notificationsCount);
 		
-	    thisStudent.getNotifications().forEach(n -> {        	
+	    thisStudent.getNotifications().forEach(n -> {
 	    	final HorizontalLayout notification;
 			
 			/*----------Session Request----------*/
@@ -216,11 +221,14 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 		
 		/*----------Session Request Created----------*/
 		
-	    ComponentUtil.addListener(UI.getCurrent(), SessionRequestCreatedEvent.class, e -> {
+	    ComponentUtil.addListener(UI.getCurrent(), SessionRequestCreatedEvent.class, e -> {	    	
 	    	++notificationsCount;
 	    	view.setNumberOfNotifications(notificationsCount);
 	    	
 	    	SessionRequest sr = e.getSessionRequest();
+	    	
+	    	logger.info(authenticatedUser + " received an invite to session " + sr.getSessionId());
+	    	
 	    	HorizontalLayout notification = sr.create(new SessionRequestRunnable(sr, dataService, securityService));
 	    	
 	    	final Long sr_id = sr.getId();
@@ -248,6 +256,9 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 	    	view.setNumberOfNotifications(notificationsCount);
 	    	
 	    	StudentGroupRequest sgr = e.getStudentGroupRequest();
+	    	
+	    	logger.info(authenticatedUser + " received an invite to group " + sgr.getStudentGroupId());
+	    	
 	    	HorizontalLayout notification = sgr.create(new StudentGroupRequestRunnable(sgr, dataService, securityService));
 	    	
 	    	final Long sgr_id = sgr.getId();
@@ -275,6 +286,9 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 	    	view.setNumberOfNotifications(notificationsCount);
 	    	
 	    	Reminder r = e.getReminder();
+	    	
+	    	logger.info(authenticatedUser + " received a reminder");
+	    	
 	    	HorizontalLayout notification = r.create();
 	    	
 	    	final Long r_id = r.getId();
@@ -302,6 +316,9 @@ public class MainLayoutPresenterImpl implements MainLayoutPresenter {
 	    	view.setNumberOfNotifications(notificationsCount);
 	    	
 	    	NotificationEntity n = e.getNotification();
+	    	
+	    	logger.info(authenticatedUser + " received a notification");
+	    	
 	    	HorizontalLayout notification = n.create();
 	    	
 	    	final Long n_id = n.getId();

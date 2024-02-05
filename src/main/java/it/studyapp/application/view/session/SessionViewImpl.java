@@ -3,6 +3,10 @@ package it.studyapp.application.view.session;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -29,6 +33,7 @@ public class SessionViewImpl extends VerticalLayout implements SessionView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private final Logger logger = LoggerFactory.getLogger(SessionViewImpl.class);
 			
 	private Grid<Session> sessionGrid = new Grid<>(Session.class);
 	private Grid<Student> participantsGrid = new Grid<>(Student.class);
@@ -53,6 +58,9 @@ public class SessionViewImpl extends VerticalLayout implements SessionView {
 		
 		this.presenter = presenter;
 		this.presenter.setView(this);
+		
+		logger.info(UI.getCurrent() + ": Navigation to Sessions page");
+		
 		this.presenter.updateSessionGrid();
 	}
 
