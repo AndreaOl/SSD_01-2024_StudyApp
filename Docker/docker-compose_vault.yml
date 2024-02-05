@@ -1,0 +1,49 @@
+version: '3.7'
+
+services:
+  consul:
+    image: consul:1.11.3
+    container_name: consul
+    init: true
+    command: 'agent -datacenter docker -server -bootstrap-expect 1 -disable-host-node-id -client 0.0.0.0 -ui -data-dir /consul/data'
+    expose:
+      - "8500"
+    networks:
+      - studyapp_net
+    volumes:
+    - ./consul_data:/consul/data
+
+  vault:
+    image: vault:1.13.3
+    container_name: vault
+    volumes:
+      - ./vault/config.hcl:/vault/config/config.hcl
+    environment:
+      - VAULT_ADDR=http://vault:8200
+    expose:
+      - "8200"
+    networks:
+      - studyapp_net
+    depends_on:
+      - consul
+    cap_add:
+      - IPC_LOCK
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - "vault server -config=/vault/config/config.hcl"
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    networks:
+    - studyapp_net
+    ports:
+    - 80:80
+    - 443:443
+    restart: always
+    volumes:
+    - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    - /etc/letsencrypt:/etc/letsencrypt
+networks:
+  studyapp_net:
+    driver: bridge

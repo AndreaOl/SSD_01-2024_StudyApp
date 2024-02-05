@@ -1,0 +1,87 @@
+version: '3.7'
+
+services:
+  keycloak:
+    cap_add:
+    - ALL
+    command: start-dev --import-realm
+    container_name: keycloak
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      KC_DB: secret
+      KC_DB_PASSWORD: secret
+      KC_DB_URL: secret
+      KC_DB_USERNAME: secret
+      KC_HEALTH_ENABLED: true
+      KC_HOSTNAME: studyappkeycloak.ddns.net
+      KC_HOSTNAME_STRICT: false
+      KC_PROXY: edge
+      KEYCLOAK_ADMIN: secret
+      KEYCLOAK_ADMIN_PASSWORD: secret
+      PROXY_ADDRESS_FORWARDING: true
+    expose:
+    - 8080
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test:
+      - CMD-SHELL
+      - '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static
+        void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK
+        == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode()
+        ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:8080/health/ready'
+      timeout: 5s
+    image: quay.io/keycloak/keycloak:latest
+    networks:
+    - ssd_project_studyapp_net
+    stdin_open: true
+    tty: true
+    volumes:
+    - ./realm:/opt/keycloak/data/import
+    - ./theme:/opt/keycloak/themes
+  postgres:
+    cap_add:
+    - ALL
+    container_name: postgres
+    environment:
+      POSTGRES_DB: secret
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: secret
+    expose:
+    - '5432'
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD-SHELL
+      - pg_isready -U postgres
+      timeout: 5s
+    image: postgres:latest
+    networks:
+    - ssd_project_studyapp_net
+    stdin_open: true
+    tty: true
+    volumes:
+    - ./postgres_data:/var/lib/postgresql/data
+  studyapp:
+    build:
+      context: ./StudyApp
+    cap_add:
+    - ALL
+    container_name: studyapp
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    expose:
+    - '8088'
+    image: studyapp:latest
+    networks:
+    - ssd_project_studyapp_net
+    stdin_open: true
+    tty: true
+
+networks:
+  ssd_project_studyapp_net:
+    external: true
